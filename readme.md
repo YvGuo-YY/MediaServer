@@ -7,7 +7,7 @@
 git clone https://github.com/PPeanutButter/MediaServer.git
 ```
 
-![image-20210719174638882](img\image-20210719174638882.png)
+![image-20210719174638882](img/image-20210719174638882.png)
 
 ### 2.Configuration
 
