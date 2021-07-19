@@ -7,6 +7,8 @@
 git clone https://github.com/PPeanutButter/MediaServer.git
 ```
 
+![image-20210719174638882](img\image-20210719174638882.png)
+
 ### 2.Configuration
 
 ###### 2.1 edit user.json to add a user with password
@@ -29,7 +31,7 @@ git clone https://github.com/PPeanutButter/MediaServer.git
 ```shell
 # assume your hard driver is mounted to /media/pi/NAS500
 # to support run on start, add to screen script.
-python3 app.py /media/pi/NAS500
+sudo python3 app.py /media/pi/NAS500
 # open http://localhost/
 ```
 
@@ -48,6 +50,29 @@ python3 app.py /media/pi/NAS500
 # 		      |E02.mkv
 # 		      |.cover (jpg, png, webp. whatever)
 ```
+
+### 3. remote download support (Optional)
+
+````shell
+# you can remote download a file to your raspberry.
+sudo apt-get install aria2
+````
+
+###### 2.1 edit aria2.conf
+
+```shell
+# set download dir
+dir=/media/pi/NAS500/Download
+# where to save and load aria2 session
+# session file must be created (by
+# touch /home/pi/Program/MediaServer/aria2.session)
+input-file=/home/pi/Program/MediaServer/aria2.session
+save-session=/home/pi/Program/MediaServer/aria2.session
+# important
+rpc-secret=<your secret key>
+```
+
+
 
 
 

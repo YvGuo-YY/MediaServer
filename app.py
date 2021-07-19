@@ -210,20 +210,6 @@ def get_device_name():
     return platform.node()
 
 
-@app.route("/remoteDownload")
-def add_remote_download():
-    if check_client_ip(request.remote_addr):
-        url = request.args.get("url").replace("__and__", "&")
-        name = request.args.get("name")
-        l = name.rindex("/")
-        import subprocess
-        cmd = 'wget -P %s -O %s "%s"' % (root + name[:l], name[l + 1:], url)
-        subprocess.call(cmd, shell=True)
-        return "成功添加离线任务:" + name
-    else:
-        return "Permission Denied"
-
-
 def check_client_ip(ip):
     with open(resource_path('') + "user.json", 'r') as f:
         return ip in json.loads(f.read())['ip']
