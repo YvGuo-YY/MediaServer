@@ -53,6 +53,8 @@ sudo python3 app.py /media/pi/NAS500
 
 ### 3. remote download support (Optional)
 
+![image-20210719180812544](img/image-20210719180812544.png)
+
 ````shell
 # you can remote download a file to your raspberry.
 sudo apt-get install aria2
@@ -70,6 +72,21 @@ input-file=/home/pi/Program/MediaServer/aria2.session
 save-session=/home/pi/Program/MediaServer/aria2.session
 # important
 rpc-secret=<your secret key>
+```
+
+###### 2.3 start aria2 server
+
+```shell
+# to support run on start, add to screen script.
+aria2c --conf-path=path.to.your.aria2.conf
+# open http://localhost/download or from http://localhost/ click download button
+```
+
+###### 2.3 aria2 service connect error?
+
+```shell
+# open setting, the JSON-RPC Path should be
+# ws://token:<your secret key>@<your server ip>:6800/jsonrpc
 ```
 
 
