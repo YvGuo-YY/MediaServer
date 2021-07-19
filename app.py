@@ -184,8 +184,8 @@ def get_video_preview(_path=None):
             cap = cv2.VideoCapture(root + path)  # 读取视频文件
             cap.set(cv2.CAP_PROP_POS_FRAMES, float(1800))
             _, frame = cap.read()
-            if not os.path.exists(resource_path('') + "preview"):
-                os.mkdir(resource_path('') + "preview")
+            if not os.path.exists(root + "preview"):
+                os.mkdir(root + "preview")
             cv2.imencode('.jpg', frame)[1].tofile(new_file)
         return send_file(new_file)
     except BaseException as a:
