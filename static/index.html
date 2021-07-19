@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="shortcut icon" href="/getAssets?res=favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/getAssets?res=style.css"/>
+    <link rel="stylesheet" type="text/css" href="/getAssets?res=icons.css"/>
+    <link rel="stylesheet" type="text/css" href="/getAssets?res=material.css"/>
+    <script type="text/javascript" src="/getAssets?res=jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/getAssets?res=material-components-web.min.js"></script>
+    <script type="text/javascript" src="/getAssets?res=clipboard.min.js"></script>
+    <script type="text/javascript" src="/getAssets?res=html.js"></script>
+    <script type="text/javascript" src="/getAssets?res=app.js"></script>
+    <script type="text/javascript">
+        $.get("/getDeviceName", function (data) {
+            document.title = data;
+        });
+    </script>
+</head>
+<body style="background-color: #0e0e0e">
+<header class="mdc-top-app-bar">
+    <div class="mdc-top-app-bar__row">
+        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+            <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button"
+                    aria-label="Open navigation menu" onclick="goBack()">arrow_back
+            </button>
+            <span class="mdc-top-app-bar__title"></span>
+        </section>
+    </div>
+</header>
+<main class="mdc-top-app-bar--fixed-adjust">
+    <div id="dir-panel" class="dirgrid">
+        <!--这里插入文件夹显示，改为多媒体==OK-->
+    </div>
+    <div id="file-panel" class="filegrid" style="margin-bottom: 30px;">
+        <!--这里插入文件显示，改为多媒体-->
+    </div>
+    <div class="mdc-snackbar" id="snackbar">
+        <div class="mdc-snackbar__surface">
+            <div aria-live="polite" class="mdc-snackbar__label" role="status"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const buttons = document.querySelectorAll('.mdc-button');
+        for (const button of buttons) {
+            mdc.ripple.MDCRipple.attachTo(button);
+        }
+        const topAppBar = new mdc.topAppBar.MDCTopAppBar(document.querySelector('.mdc-top-app-bar'));
+    </script>
+</main>
+</body>
