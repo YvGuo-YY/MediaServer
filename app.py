@@ -166,7 +166,7 @@ def get_file(file_name):
     if check_client_ip(request.remote_addr):
         # url中加一个文件名避免播放器不知道视频文件名
         path = request.args.get("path").replace('%2B', '+')
-        return send_file(root + path, as_attachment=True, attachment_filename=path[path.rindex("/") + 1:],
+        return send_file(root + path, as_attachment=True, download_name=path[path.rindex("/") + 1:],
                          conditional=True)
     else:
         return redirect('/login', code=302)
@@ -247,5 +247,4 @@ def user_login():
 if __name__ == '__main__':
     print('挂载目录		' + root)
     print('脚本目录		' + resource_path(''))
-    print('访问地址		' + 'http://' + get_host_ip() + f':{PORT}/')
     app.run(host="0.0.0.0", port=PORT)

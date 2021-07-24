@@ -27,11 +27,12 @@ function getFileList() {
         $('.mdc-top-app-bar__title').text(root)
         for (const list of eval(data)) {
             if (list.type === "Directory")
+                //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
                 $('div#dir-panel').append(String.format(directory_html_data, list.name))
             else {
                 let _0 = list.name
                 let _1 = list.mime_type
-                let _2 = root + encodeURIComponent(_0)
+                let _2 = root + _0.replace('+', '%2B')
                 let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
                 let _4 = _2
                 let _5 = list.bookmark_state
