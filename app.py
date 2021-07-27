@@ -211,6 +211,12 @@ def get_device_name():
     return platform.node()
 
 
+@app.route("/notify")
+def get_notify():
+    return "<li>Windows: 安装Potplayer后点击播放</li><li>Android: 安装NAS客户端后点击播放</li><li>IOS、Linux等:复制链接到播放器</li>",\
+           200, {"Content-Type": "text/html; charset=utf-8"}
+
+
 def check_client_ip(ip):
     with open(resource_path('') + "user.json", 'r') as f:
         return ip in json.loads(f.read())['ip']
