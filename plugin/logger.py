@@ -6,7 +6,7 @@ from subprocess import Popen
 # warning, windows* not support ':' in file name
 runs = time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
 writer = SummaryWriter(log_dir=f"log/{runs}", max_queue=6)
-Popen('tensorboard --logdir=log --bind_all')
+Popen(['tensorboard', '--logdir=log', '--bind_all'])
 
 
 def write_log():

@@ -236,8 +236,11 @@ def user_login():
 
 
 def start_services():
-    import plugin.logger
-    import plugin.aria2
+    try:
+        import plugin.logger
+        import plugin.aria2
+    except Exception as e:
+        print(e)
 
 
 # 不管是什么路径的链接都发送模板html，读取路径然后通过api来加载文件夹与文件
