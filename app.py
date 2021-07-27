@@ -4,6 +4,7 @@ import os
 import socket
 import sys
 import time
+import _thread
 
 from flask import Flask, request, send_file, redirect
 
@@ -221,16 +222,28 @@ def user_login():
     psw = request.args.get("psw")
     with open(resource_path('') + "user.json", 'r') as f:
         j = json.loads(f.read())
-        try:
-            if j[name] == psw and not check_client_ip(request.remote_addr):
-                j['ip'].append(request.remote_addr)
+        if j.__contains__(name):
+            if j[name] == psw:
+                if not check_client_ip(request.remote_addr):
+                    j['ip'].append(request.remote_addr)
                 with open(resource_path('') + "user.json", 'w') as f1:
                     f1.write(json.dumps(j))
                 return "OK"
             else:
-                return "用户名或密码错误"
-        except KeyError:
-            return "用户名或密码错误"
+                return "密码错误"
+        else:
+            return "用户不存在"
+
+
+def start_services():
+    import platform
+    try:
+        if platform.system() != 'Linux':
+            raise NotImplementedError('logger only support linux, services won`t be running.')
+        import plugin.logger as logger
+        logger.write_log()
+    except Exception as e:
+        print(e)
 
 
 # 不管是什么路径的链接都发送模板html，读取路径然后通过api来加载文件夹与文件
@@ -247,4 +260,5 @@ def user_login():
 if __name__ == '__main__':
     print('挂载目录		' + root)
     print('脚本目录		' + resource_path(''))
+    start_services()
     app.run(host="0.0.0.0", port=PORT)
