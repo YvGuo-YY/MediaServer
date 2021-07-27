@@ -236,12 +236,9 @@ def user_login():
 
 
 def start_services():
-    import platform
     try:
-        if platform.system() != 'Linux':
-            raise NotImplementedError('logger only support linux, services won`t be running.')
-        import plugin.logger as logger
-        logger.write_log()
+        import plugin.logger
+        import plugin.aria2
     except Exception as e:
         print(e)
 

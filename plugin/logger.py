@@ -34,3 +34,6 @@ def get_cpu_and_mem():
     matches = re.finditer(regex, top_info)
     for matchNum, match in enumerate(matches, start=1):
         return top_info, float('%.1f' % (100 - float(match.group(1)))), float('%.1f' % float(match.group(2)))
+
+
+write_log()
