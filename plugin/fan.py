@@ -38,4 +38,5 @@ def fan_controller():
         Timer(10, fan_controller).start()
 
 
+print("temp-controlled fan running")
 Timer(10, fan_controller).start()

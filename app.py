@@ -239,6 +239,7 @@ def start_services():
     try:
         import plugin.logger
         import plugin.aria2
+        import plugin.fan
     except Exception as e:
         print(e)
 
