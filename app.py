@@ -1,7 +1,6 @@
 import json
 import mimetypes
 import os
-import socket
 import sys
 import time
 
@@ -19,22 +18,6 @@ app = Flask(__name__, static_url_path="", static_folder=resource_path('static'),
             template_folder=resource_path("templates"))
 
 
-def get_host_ip():
-    """
-    查询本机局域网ip地址
-    :return: ip
-    """
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        s.close()
-        return ip
-    except Exception:
-        print("ip err")
-    return 'ip'
-
-
 @app.errorhandler(404)
 def not_found(err):
     return app.send_static_file('index.html')
@@ -50,7 +33,7 @@ def remote_download():
 
 @app.route('/')
 def send_index_html():
-    if check_client_ip(request.remote_addr):
+    if is_known_ip(request.remote_addr):
         return app.send_static_file('index.html'), 200, [("Cache-Control", "no-cache, no-store, must-revalidate"),
                                                          ("Pragma", "no-cache"), ("Expires", "0"),
                                                          ("Cache-Control", "public, max-age=0")]
@@ -74,45 +57,25 @@ def send_assets(parent=''):
     return app.send_static_file(parent + res)
 
 
-@app.route('/AndroidClientApi')
-def android_nas_client():
-    # trust my android device, lazy to write android login code..
-    if not check_client_ip(request.remote_addr):
-        with open(resource_path('') + "user.json", 'r') as f:
-            j = json.loads(f.read())
-            j['ip'].append(request.remote_addr)
-            with open(resource_path('') + "user.json", 'w') as f1:
-                f1.write(json.dumps(j))
-    api = {}
-    a = os.listdir(root)
-    a.sort()
-    for d in a:
-        album = os.path.join(root, d)
-        if os.path.isdir(album) and os.path.exists(album + '/.cover'):
-            album_item = []
-            fs = os.listdir(album)
-            fs.sort()
-            for f in fs:
-                mime = mimetypes.guess_type(f)[0]
-                episod = os.path.join(album, f)
-                episod_desc = {}
-                if os.path.isfile(episod) and ("application/octet-stream" if mime is None else mime).startswith(
-                        'video/'):
-                    episod_desc['name'] = f
-                    bookmark_flag_file = os.path.join(os.path.join(root, 'preview'),
-                                                      f'/{d}/{f}'.replace("/", "_") + '.bookmark')
-                    episod_desc['watched'] = True if os.path.exists(bookmark_flag_file) else False
-                    episod_desc['length'] = os.path.getsize(episod)
-                    episod_desc['desc'] = time.ctime(os.path.getmtime(episod))
-                    album_item.append(episod_desc)
-            api[d] = album_item
-    return json.dumps(api, ensure_ascii=False), 200, {"Content-Type": "application/json"}
-
-
 @app.route('/getFileList')
 def send_file_list():
     json_array = []
     path = request.args.get("path")
+    usr = ''
+    ps = ''
+    try:
+        usr = request.args.get("usr")
+        ps = request.args.get("ps")
+    except Exception:
+        pass
+    if not is_known_ip(request.remote_addr) and user_login(usr, ps) != "OK":
+        return json.dumps([{
+            "name": "请登录",
+            "type": "File",
+            "mime_type": "application/octet-stream",
+            "watched": "watched",
+            "bookmark_state": "bookmark_add"
+        }]), 403, {"Content-Type": "application/json"}
     a = os.listdir(root + path)
     a.sort()
     for f in a:
@@ -127,6 +90,8 @@ def send_file_list():
             continue
         json_array.append({
             "name": f,
+            "length": os.path.getsize(root + path + f) if os.path.isfile(root + path + f) else 0,
+            "desc": time.ctime(os.path.getmtime(root + path + f)),
             "type": "File" if os.path.isfile(root + path + f) else "Directory",
             "mime_type": "application/octet-stream" if mime is None else mime,
             "watched": "watched" if os.path.exists(bookmark_flag_file) else "",
@@ -147,7 +112,7 @@ def file_size_desc(size):
 
 @app.route('/toggleBookmark')
 def toggle_bookmark():
-    if check_client_ip(request.remote_addr):
+    if is_known_ip(request.remote_addr):
         path = request.args.get("path")
         bookmark_flag_file = os.path.join(os.path.join(root, 'preview'), path.replace("/", "_") + '.bookmark')
         state = os.path.exists(bookmark_flag_file)
@@ -163,7 +128,7 @@ def toggle_bookmark():
 
 @app.route("/getFile/<file_name>")
 def get_file(file_name):
-    if check_client_ip(request.remote_addr):
+    if is_known_ip(request.remote_addr):
         # url中加一个文件名避免播放器不知道视频文件名
         path = request.args.get("path").replace('%2B', '+')
         return send_file(root + path, as_attachment=True, download_name=path[path.rindex("/") + 1:],
@@ -216,20 +181,20 @@ def get_notify():
            200, {"Content-Type": "text/html; charset=utf-8"}
 
 
-def check_client_ip(ip):
+def is_known_ip(ip):
     with open(resource_path('') + "user.json", 'r') as f:
         return ip in json.loads(f.read())['ip']
 
 
 @app.route("/userLogin")
-def user_login():
-    name = request.args.get("name")
-    psw = request.args.get("psw")
+def user_login(name=None, psw=None) -> str:
+    name = name if name else request.args.get("name")
+    psw = psw if psw else request.args.get("psw")
     with open(resource_path('') + "user.json", 'r') as f:
         j = json.loads(f.read())
         if j.__contains__(name):
             if j[name] == psw:
-                if not check_client_ip(request.remote_addr):
+                if not is_known_ip(request.remote_addr):
                     j['ip'].append(request.remote_addr)
                 with open(resource_path('') + "user.json", 'w') as f1:
                     f1.write(json.dumps(j))
@@ -270,8 +235,8 @@ def start_services():
 #      √http://localhost:8081/getFileDetail?path=style.css --获取文件信息[{mime_type,size,last_edit_time}]
 #      √http://localhost:8081/getFile?path= --下载文件
 #      √http://localhost:8081/getVideoPreview?path= --下载视频文件缩略图
-#      ?http://localhost:8081/settings?key=&value= --设置
-#      √http://localhost:8081/download --远程下载
+#      √http://localhost:8081/download --远程下载管理控制台
+#      √http://localhost:8081/remote_download --添加远程下载
 #      √http://localhost:8081/else --获取index.html
 if __name__ == '__main__':
     print('挂载目录		' + root)
