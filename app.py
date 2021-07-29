@@ -4,7 +4,6 @@ import os
 import socket
 import sys
 import time
-import _thread
 
 from flask import Flask, request, send_file, redirect
 
@@ -213,7 +212,7 @@ def get_device_name():
 
 @app.route("/notify")
 def get_notify():
-    return "<li>Windows: 安装Potplayer后点击播放</li><li>Android: 安装NAS客户端后点击播放</li><li>IOS、Linux等:复制链接到播放器</li>",\
+    return "<li>Windows: 安装Potplayer后点击播放</li><li>Android: 安装NAS客户端后点击播放</li><li>IOS、Linux等:复制链接到播放器</li>", \
            200, {"Content-Type": "text/html; charset=utf-8"}
 
 
@@ -239,6 +238,19 @@ def user_login():
                 return "密码错误"
         else:
             return "用户不存在"
+
+
+@app.route("/remote_download", methods=['POST'])
+def add_remote_download():
+    from pyaria2 import Aria2RPC
+    out = request.form['out']
+    url = request.form['url']
+    jsonrpc = Aria2RPC(url="http://192.168.10.208:6800/rpc", token="0930")
+    options = {"out": out,
+               "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                             "Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.55"}
+    jsonrpc.addUri([url], options=options)
+    return "<script>window.close();</script>", 200, {"Content-Type": "text/html; charset=utf-8"}
 
 
 def start_services():
