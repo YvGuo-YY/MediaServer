@@ -245,7 +245,7 @@ def add_remote_download():
     from pyaria2 import Aria2RPC
     out = request.form['out']
     url = request.form['url']
-    jsonrpc = Aria2RPC(url="http://192.168.10.208:6800/rpc", token="0930")
+    jsonrpc = Aria2RPC(token="0930")
     options = {"out": out,
                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                              "Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.55"}
