@@ -2,12 +2,14 @@ import json
 import mimetypes
 import os
 import sys
+import threading
 import time
 
 from flask import Flask, request, send_file, redirect
 
 root = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
 PORT = 80
+get_preview_lock = threading.Semaphore(2)
 
 
 def resource_path(relative_path):
@@ -139,23 +141,23 @@ def get_file(file_name):
 
 @app.route("/getVideoPreview")
 def get_video_preview(_path=None):
-    path = _path if _path else request.args.get("path")
-    cache_file_name = path.replace("/", "_")
-    try:
-        # 判断是否有缓存
-        new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name + '.jpg')
-        if not os.path.exists(new_file):
-            import cv2
-            cap = cv2.VideoCapture(root + path)  # 读取视频文件
-            cap.set(cv2.CAP_PROP_POS_FRAMES, float(1800))
-            _, frame = cap.read()
-            if not os.path.exists(root + "preview"):
-                os.mkdir(root + "preview")
-            cv2.imencode('.jpg', frame)[1].tofile(new_file)
-        return send_file(new_file)
-    except BaseException as a:
-        print(a.__str__())
-        return a.__str__()
+    if get_preview_lock.acquire():
+        path = _path if _path else request.args.get("path")
+        cache_file_name = path.replace("/", "_")
+        try:
+            # 判断是否有缓存
+            new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name + '.jpg')
+            if not os.path.exists(new_file):
+                if not os.path.exists(root + "preview"):
+                    os.mkdir(root + "preview")
+                # pip install ffmpeg, opencv-python is too large!
+                os.system(f'ffmpeg -i \"{root + path}\" -ss 00:00:05.000 -vframes 1 \"{new_file}\"')
+            get_preview_lock.release()
+            return send_file(new_file)
+        except BaseException as a:
+            print(a.__str__())
+            get_preview_lock.release()
+            return a.__str__()
 
 
 @app.route("/getCover")
@@ -177,8 +179,9 @@ def get_device_name():
 
 @app.route("/notify")
 def get_notify():
-    return "<li>Windows: 安装Potplayer后点击播放</li><li>Android: 安装NAS客户端后点击播放</li><li>IOS、Linux等:复制链接到播放器</li>", \
-           200, {"Content-Type": "text/html; charset=utf-8"}
+    return app.send_static_file('notify.html'), 200, [("Cache-Control", "no-cache, no-store, must-revalidate"),
+                                                      ("Pragma", "no-cache"), ("Expires", "0"),
+                                                      ("Cache-Control", "public, max-age=0")]
 
 
 def is_known_ip(ip):
