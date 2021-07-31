@@ -242,7 +242,8 @@ def start_services():
 #      √http://localhost:8081/remote_download --添加远程下载
 #      √http://localhost:8081/else --获取index.html
 if __name__ == '__main__':
-    logo = r"""                                                  __                                          
+    logo = r"""
+                                                  __                                          
                                                  /\ \__                                       
      _____      __      __       ___     __  __  \ \ ,_\             ___       __       ____  
     /\ '__`\  /'__`\  /'__`\   /' _ `\  /\ \/\ \  \ \ \/   _______ /' _ `\   /'__`\    /',__\ 
