@@ -146,7 +146,7 @@ def get_video_preview(_path=None):
         cache_file_name = path.replace("/", "_")
         try:
             # 判断是否有缓存
-            new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name + '.jpg')
+            new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):
                 if not os.path.exists(root + "preview"):
                     os.mkdir(root + "preview")
@@ -242,6 +242,17 @@ def start_services():
 #      √http://localhost:8081/remote_download --添加远程下载
 #      √http://localhost:8081/else --获取index.html
 if __name__ == '__main__':
+    logo = r"""                                                  __                                          
+                                                 /\ \__                                       
+     _____      __      __       ___     __  __  \ \ ,_\             ___       __       ____  
+    /\ '__`\  /'__`\  /'__`\   /' _ `\  /\ \/\ \  \ \ \/   _______ /' _ `\   /'__`\    /',__\ 
+    \ \ \L\ \/\  __/ /\ \L\.\_ /\ \/\ \ \ \ \_\ \  \ \ \_ /\______\/\ \/\ \ /\ \L\.\_ /\__, `\
+     \ \ ,__/\ \____\\ \__/.\_\\ \_\ \_\ \ \____/   \ \__\\/______/\ \_\ \_\\ \__/.\_\\/\____/
+      \ \ \/  \/____/ \/__/\/_/ \/_/\/_/  \/___/     \/__/          \/_/\/_/ \/__/\/_/ \/___/ 
+       \ \_\                                                                                  
+        \/_/                                                       build.2021.7.31 by 花生酱啊
+    """
+    print(f"\033[1;33m{logo}\033[0m")
     print('挂载目录		' + root)
     print('脚本目录		' + resource_path(''))
     start_services()
