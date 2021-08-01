@@ -3,10 +3,9 @@ import time
 from threading import Timer
 from tensorboardX import SummaryWriter
 from subprocess import Popen
-# warning, windows* not support ':' in file name
-runs = time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
-writer = SummaryWriter(log_dir=f"log/{runs}", max_queue=6)
-Popen(['tensorboard', '--logdir=log', '--bind_all'])
+runs = "Raspberry Pi 4 Model B"
+writer = SummaryWriter(log_dir=f"{runs}", max_queue=6)
+Popen(['tensorboard', f'--logdir=./', '--bind_all'])
 
 
 def write_log():
