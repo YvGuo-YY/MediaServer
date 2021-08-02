@@ -4,10 +4,11 @@ import os
 import sys
 import threading
 import time
-
 from flask import Flask, request, send_file, redirect
+from DiskManager import DiskManager
 
-root = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+disk_manager = DiskManager(sys.argv[1:])
+root = ''  # sda/_disk_manager_dir/
 PORT = 80
 get_preview_lock = threading.Semaphore(2)
 
@@ -78,9 +79,9 @@ def send_file_list():
             "watched": "watched",
             "bookmark_state": "bookmark_add"
         }]), 403, {"Content-Type": "application/json"}
-    a = os.listdir(root + path)
+    a = disk_manager.listdir(root + path)
     a.sort()
-    for f in a:
+    for f in a:  # assert f==sda/xxS01
         mime = mimetypes.guess_type(f)[0]
         bookmark_flag_file = os.path.join(os.path.join(root, 'preview'), (path + f).replace("/", "_") + '.bookmark')
         if os.path.isdir(root + path + f) and not os.path.exists(root + path + f + '/.cover'):
@@ -145,12 +146,10 @@ def get_video_preview(_path=None):
         path = _path if _path else request.args.get("path")
         cache_file_name = path.replace("/", "_")
         try:
-            # 判断是否有缓存
             new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):
                 if not os.path.exists(root + "preview"):
                     os.mkdir(root + "preview")
-                # pip install ffmpeg, opencv-python is too large!
                 os.system(f'ffmpeg -i \"{root + path}\" -ss 00:00:05.000 -vframes 1 \"{new_file}\"')
             get_preview_lock.release()
             return send_file(new_file)
@@ -215,6 +214,7 @@ def add_remote_download():
     url = request.form['url']
     jsonrpc = Aria2RPC(token="0930")
     options = {"out": out,
+               "dir": disk_manager.get_max_avl_disk(),
                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                              "Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.55"}
     jsonrpc.addUri([url], options=options)
@@ -254,7 +254,5 @@ if __name__ == '__main__':
         \/_/                                                         build.2021.8.1 by 花生酱啊
     """
     print(f"\033[1;33m{logo}\033[0m")
-    print('挂载目录		' + root)
-    print('脚本目录		' + resource_path(''))
     start_services()
     app.run(host="0.0.0.0", port=PORT)
