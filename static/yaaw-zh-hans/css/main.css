@@ -17,7 +17,79 @@
  * from http://www.gnu.org/licenses/lgpl.txt
  *
  */
+.mo-speedometer {
+    font-size: 12px;
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 150px;
+    height: 40px;
+    padding: 5px 10px 5px 48px;
+    border-radius: 100px;
+    transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+    border: 1px solid #ccc;
+    background: #FFFFFF;
+}
+.mo-speedometer.stopped {
+    width: 40px;
+    padding: 0;
+}
+.mo-speedometer.stopped .mode i {
+    color: #9b9b9b;
+}
 
+.mo-speedometer .mode i {
+    font-size: 20px;
+    font-style: normal;
+    line-height: 28px;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 28px;
+    height: 28px;
+    padding: 2px;
+    text-align: center;
+    vertical-align: top;
+    color: #5b5bfa;
+}
+.mo-speedometer .value em {
+    font-size: 16px;
+    line-height: 12px;
+    display: block;
+    width: 120%;
+    transform: scale(0.625);
+    color: #9b9b9b;
+}
+.mo-speedometer .value span {
+    font-size: 13px;
+    line-height: 14px;
+    display: block;
+    margin-top: 2px;
+    color: #5b5bfa;
+}
+.mo-speedometer em {
+    font-style: normal;
+}
+.mo-speedometer .value {
+    font-size: 0;
+    overflow: hidden;
+    width: 100%;
+    text-align: right;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.mo-speedometer.stopped .mode em {
+    display: none;
+}
+.mo-icon {
+    display: inline-block;
+    fill: currentColor;
+}
+.mo-speedometer .mode {
+    font-size: 0;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
 .select-box {
     cursor: pointer;
 }
