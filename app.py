@@ -247,5 +247,5 @@ if __name__ == '__main__':
         \/_/                                                         build.2021.8.1 by 花生酱啊
     """
     print(f"\033[1;33m{logo}\033[0m")
-    # start_services()
+    start_services()
     app.run(host="0.0.0.0", port=PORT)
