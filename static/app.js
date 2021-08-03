@@ -18,7 +18,7 @@ function onItemClick(name, type, mime_type) {
         goNext(name);
 }
 
-Array.prototype.toString() = function() {
+Array.prototype.toString = function() {
   if(this.length == 0) {
     return '/';
   }
