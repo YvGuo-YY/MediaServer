@@ -34,6 +34,6 @@ const directory_html_data = "<div class=\"mdc-card\" style=\"height: fit-content
                             "    <img class=\"mdc-card__media\" src=\"/getCover?cover={0}\" style=\"width: 100%;\" alt=\"{0}\"/>\n" +
                             "    <span class=\"ipc-rating-star ipc-rating-star--baseAlt ipc-rating-star--imdb\" style=\"padding: 10px 5px;\"></span>\n" +
                             "    <div class=\"mdc-card-wrapper__text-section\">\n" +
-                            "        <div class=\"demo-card__title\">{0}</div>\n" +
+                            "        <div class=\"demo-card__title\">{1}</div>\n" +
                             "    </div>\n" +
                             "</div>";
