@@ -22,7 +22,14 @@ Array.prototype.toString = function() {
   if(this.length == 0) {
     return '/';
   }
-  return this.join('/') + '/';
+  return this.join('/');
+};
+
+Array.prototype.toPath = function() {
+  if(this.length == 0) {
+    return '/';
+  }
+  return '/'+this.join('/') + '/';
 };
 
 function getFileList() {
