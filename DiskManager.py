@@ -50,7 +50,7 @@ class DiskManager:
         self.root = self._disk_manager_dir
         for path in self.disk_list:
             print(path)
-            self.disk_names.append(path[path.rfind("/") + 1:])
+            self.disk_names.append(path[path.rfind("/", start=1) + 1:])
             os.system(f'ln -s {path} {os.path.join(self._disk_manager_dir, path[path.rfind("/") + 1:])}')
 
     def listdir(self, path) -> list:
