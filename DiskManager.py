@@ -40,6 +40,7 @@ class DiskManager:
         # 磁盘绝对路径数组，通过终端传参
         self.disk_list = disk_list
         self.disk_names = []
+        self.add_disk_from_file = {}
         if not os.path.exists(self._disk_manager_dir):
             os.mkdir(self._disk_manager_dir)
         else:
@@ -52,14 +53,15 @@ class DiskManager:
             self.disk_names.append(path[path.rfind("/") + 1:])
             os.system(f'ln -s {path} {os.path.join(self._disk_manager_dir, path[path.rfind("/") + 1:])}')
 
-    # 获取所有磁盘所有一级目录,os.path.join() sucks!
     def listdir(self, path) -> list:
         li = []
-        for disk in (self.disk_names if path == '/' else [path[1:]]):
-            a = os.listdir(f'{self.root}/{disk}')
+        for disk in (self.disk_names if path == '/' else os.path.join(self.add_disk_from_file[path[1:]], path)):
+            a = os.listdir(os.path.join(self.root, disk))
             a.sort()
             for f in a:
-                li.append(f'{disk}/{f}')
+                if path == '/':
+                    self.add_disk_from_file[f] = disk
+                li.append(f)
         return li
 
     def get_max_avl_disk(self):

@@ -63,7 +63,7 @@ def send_assets(parent=''):
 @app.route('/getFileList')
 def send_file_list():
     json_array = []
-    path = request.args.get("path")  # / or /sda/S01
+    path = request.args.get("path")
     usr = ''
     ps = ''
     try:
@@ -148,9 +148,7 @@ def get_video_preview(_path=None):
         try:
             new_file = os.path.join(disk_manager.preview_cache_dir, cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):
-                if not os.path.exists(root + "preview"):
-                    os.mkdir(root + "preview")
-                os.system(f'ffmpeg -i \"{root + path}\" -ss 00:00:05.000 -vframes 1 \"{new_file}\"')
+                os.system(f'ffmpeg -i \"{os.path.join(root, path)}\" -ss 00:00:05.000 -vframes 1 \"{new_file}\"')
             get_preview_lock.release()
             return send_file(new_file)
         except BaseException as a:
@@ -161,13 +159,7 @@ def get_video_preview(_path=None):
 
 @app.route("/getCover")
 def get_cover(_path=None):
-    path = request.args.get("cover")
-    try:
-        new_file = root + f'/{path}/.cover'
-        return send_file(new_file)
-    except BaseException as a:
-        print(a.__str__())
-        return a.__str__()
+    return send_file(os.path.join(root, request.args.get("cover"), '.cover'))
 
 
 @app.route("/getDeviceName")
