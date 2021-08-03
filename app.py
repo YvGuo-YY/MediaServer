@@ -81,6 +81,7 @@ def send_file_list():
         }]), 403, {"Content-Type": "application/json"}
     a = disk_manager.listdir(path)
     a.sort()
+    print(a)
     for f in a:  # assert f==sda/xxS01 or sda/xxS01/xx.mkv
         mime = mimetypes.guess_type(f)[0]
         bookmark_flag_file = os.path.join(disk_manager.preview_cache_dir, f.replace("/", "_") + '.bookmark')
