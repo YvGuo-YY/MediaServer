@@ -45,6 +45,7 @@ function getFileList() {
                 let _0 = list.name
                 let _1 = list.mime_type
                 let _2 = _0.replace('+', '%2B')
+                _0 = _0.substring(_0.lastIndexOf('/'+1))
                 let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
                 let _4 = _2
                 let _5 = list.bookmark_state
