@@ -207,7 +207,7 @@ def add_remote_download():
     url = request.form['url']
     jsonrpc = Aria2RPC(token="0930")
     options = {"out": out,
-               "dir": disk_manager.get_max_avl_disk(),
+               "dir": os.path.join(disk_manager.disk_manager_dir, disk_manager.get_max_avl_disk(), 'Download'),
                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                              "Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.55"}
     jsonrpc.addUri([url], options=options)
