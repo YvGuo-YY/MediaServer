@@ -18,11 +18,18 @@ function onItemClick(name, type, mime_type) {
         goNext(name);
 }
 
+Array.prototype.toString() = function() {
+  if(this.length == 0) {
+    return '/';
+  }
+  return this.join('/') + '/';
+};
+
 function getFileList() {
-    $.get("/getFileList?path=" + root, function (data) {
+    $.get("/getFileList?path=" + path_list.toString(), function (data) {
         $('#dir-panel').empty();
         $('#file-panel').empty();
-        $('.mdc-top-app-bar__title').text(path_list.join('/'))
+        $('.mdc-top-app-bar__title').text(path_list.toString())
         for (const list of eval(data)) {
             if (list.type === "Directory")
                 //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
@@ -30,7 +37,7 @@ function getFileList() {
             else {
                 let _0 = list.name
                 let _1 = list.mime_type
-                let _2 = root + _0.replace('+', '%2B')
+                let _2 = path_list.toString() + _0.replace('+', '%2B')
                 let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
                 let _4 = _2
                 let _5 = list.bookmark_state
@@ -38,10 +45,6 @@ function getFileList() {
                 $('div#file-panel').append(String.format(file_html_data, _0, _1, _2, _3, _4, _5, _6));
             }
         }
-        // const selector = '.mdc-button, .mdc-icon-button';
-        // const ripples = [].map.call(document.querySelectorAll(selector), function (el) {
-        //     return new mdc.ripple.MDCRipple(el);
-        // });
     });
 }
 
