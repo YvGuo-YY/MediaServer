@@ -49,6 +49,7 @@ class DiskManager:
             os.mkdir(self._preview_cache_dir)
         self.root = self._disk_manager_dir
         for path in self.disk_list:
+            print(path)
             self.disk_names.append(path[path.rfind("/") + 1:])
             os.system(f'ln -s {path} {os.path.join(self._disk_manager_dir, path[path.rfind("/") + 1:])}')
 
