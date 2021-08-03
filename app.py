@@ -8,7 +8,7 @@ from flask import Flask, request, send_file, redirect
 from DiskManager import DiskManager
 
 disk_manager = DiskManager(sys.argv[1:])
-root = ''  # sda/_disk_manager_dir/
+root = disk_manager.disk_manager_dir
 PORT = 80
 get_preview_lock = threading.Semaphore(2)
 
@@ -63,7 +63,7 @@ def send_assets(parent=''):
 @app.route('/getFileList')
 def send_file_list():
     json_array = []
-    path = request.args.get("path")
+    path = request.args.get("path")  # / or /sda/S01
     usr = ''
     ps = ''
     try:
@@ -79,12 +79,12 @@ def send_file_list():
             "watched": "watched",
             "bookmark_state": "bookmark_add"
         }]), 403, {"Content-Type": "application/json"}
-    a = disk_manager.listdir(root + path)
+    a = disk_manager.listdir(path)
     a.sort()
-    for f in a:  # assert f==sda/xxS01
+    for f in a:  # assert f==sda/xxS01 or sda/xxS01/xx.mkv
         mime = mimetypes.guess_type(f)[0]
-        bookmark_flag_file = os.path.join(os.path.join(root, 'preview'), (path + f).replace("/", "_") + '.bookmark')
-        if os.path.isdir(root + path + f) and not os.path.exists(root + path + f + '/.cover'):
+        bookmark_flag_file = os.path.join(disk_manager.preview_cache_dir, f.replace("/", "_") + '.bookmark')
+        if os.path.isdir(root + f) and not os.path.exists(root + f + '/.cover'):
             # skip folders that might not contains media file
             continue
         if os.path.isfile(root + path + f) and not (
@@ -93,9 +93,9 @@ def send_file_list():
             continue
         json_array.append({
             "name": f,
-            "length": os.path.getsize(root + path + f) if os.path.isfile(root + path + f) else 0,
-            "desc": time.ctime(os.path.getmtime(root + path + f)),
-            "type": "File" if os.path.isfile(root + path + f) else "Directory",
+            "length": os.path.getsize(root + f) if os.path.isfile(root + f) else 0,
+            "desc": time.ctime(os.path.getmtime(root + f)),
+            "type": "File" if os.path.isfile(root + f) else "Directory",
             "mime_type": "application/octet-stream" if mime is None else mime,
             "watched": "watched" if os.path.exists(bookmark_flag_file) else "",
             "bookmark_state": "bookmark_add" if not os.path.exists(bookmark_flag_file) else "bookmark_added"
@@ -117,7 +117,7 @@ def file_size_desc(size):
 def toggle_bookmark():
     if is_known_ip(request.remote_addr):
         path = request.args.get("path")
-        bookmark_flag_file = os.path.join(os.path.join(root, 'preview'), path.replace("/", "_") + '.bookmark')
+        bookmark_flag_file = os.path.join(disk_manager.preview_cache_dir, path.replace("/", "_") + '.bookmark')
         state = os.path.exists(bookmark_flag_file)
         if state:
             os.remove(bookmark_flag_file)
@@ -146,7 +146,7 @@ def get_video_preview(_path=None):
         path = _path if _path else request.args.get("path")
         cache_file_name = path.replace("/", "_")
         try:
-            new_file = os.path.join(os.path.join(root, 'preview'), cache_file_name.replace('%2B', '+') + '.jpg')
+            new_file = os.path.join(disk_manager.preview_cache_dir, cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):
                 if not os.path.exists(root + "preview"):
                     os.mkdir(root + "preview")

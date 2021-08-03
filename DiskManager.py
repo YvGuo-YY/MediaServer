@@ -1,6 +1,7 @@
 import ctypes
 import os.path
 import platform
+import shutil
 
 
 def file_size_desc(size):
@@ -30,6 +31,7 @@ def get_free_space(folder):
 
 class DiskManager:
     _disk_manager_dir = "_disk_manager_dir"
+    _preview_cache_dir = "_preview_cache_dir"
     # 树莓派4B有两个USB2.0口，降低其优先级
     # 3.0, 3.0, 2.0, 2.0
     _disk_weight = [1.0, 1.0, 3.0, 3.0]
@@ -41,9 +43,10 @@ class DiskManager:
         if not os.path.exists(self._disk_manager_dir):
             os.mkdir(self._disk_manager_dir)
         else:
-            # shutil.rmtree(_disk_manager_dir)
-            # os.mkdir(_disk_manager_dir)
-            pass
+            shutil.rmtree(self._disk_manager_dir)
+            os.mkdir(self._disk_manager_dir)
+        if not os.path.exists(self._preview_cache_dir):
+            os.mkdir(self._preview_cache_dir)
         self.root = self._disk_manager_dir
         for path in self.disk_list:
             self.disk_names.append(path[path.rfind("/") + 1:])
@@ -53,11 +56,10 @@ class DiskManager:
     def listdir(self, path) -> list:
         li = []
         for disk in (self.disk_names if path == '/' else [path[1:]]):
-            parent = f'{self.root}/{disk}'
-            a = os.listdir(parent)
+            a = os.listdir(f'{self.root}/{disk}')
             a.sort()
             for f in a:
-                li.append(f'{parent}/{f}')
+                li.append(f'{disk}/{f}')
         return li
 
     def get_max_avl_disk(self):
@@ -73,3 +75,11 @@ class DiskManager:
         [print(path, '\t', file_size_desc(os.path.getsize(path)), 'used\t', file_size_desc(get_free_space(path)), 'avl')
          for path in self.disk_list]
         print('=======DiskManager=======')
+
+    @property
+    def preview_cache_dir(self):
+        return self._preview_cache_dir
+
+    @property
+    def disk_manager_dir(self):
+        return self._disk_manager_dir
