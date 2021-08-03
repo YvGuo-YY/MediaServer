@@ -2,16 +2,7 @@ import ctypes
 import os.path
 import platform
 import shutil
-
-
-def file_size_desc(size):
-    if size >> 30 >= 1.0:
-        return f'{size / (1024 * 1024 * 1024):.2f}GB'
-    if size >> 20 >= 1.0:
-        return f'{size / (1024 * 1024):.2f}MB'
-    if size >> 10 >= 1.0:
-        return f'{size / 1024:.2f}KB'
-    return f'{size:.2f}B'
+from tools import file_size_desc
 
 
 def get_free_space(folder):

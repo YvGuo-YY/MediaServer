@@ -4,18 +4,16 @@ import os
 import sys
 import threading
 import time
+
 from flask import Flask, request, send_file, redirect
+
 from DiskManager import DiskManager
+from tools import get_season_name, start_services, is_known_ip, resource_path
 
 disk_manager = DiskManager(sys.argv[1:])
 root = disk_manager.disk_manager_dir
 PORT = 80
 get_preview_lock = threading.Semaphore(2)
-
-
-def resource_path(relative_path):
-    return sys.path[0] + '/' + relative_path
-
 
 app = Flask(__name__, static_url_path="", static_folder=resource_path('static'),
             template_folder=resource_path("templates"))
@@ -104,16 +102,6 @@ def send_file_list():
     return json.dumps(json_array), 200, {"Content-Type": "application/json"}
 
 
-def file_size_desc(size):
-    if size >> 30 >= 1.0:
-        return f'{size / (1024 * 1024 * 1024):.2f}GB'
-    if size >> 20 >= 1.0:
-        return f'{size / (1024 * 1024):.2f}MB'
-    if size >> 10 >= 1.0:
-        return f'{size / 1024:.2f}KB'
-    return f'{size:.2f}B'
-
-
 @app.route('/toggleBookmark')
 def toggle_bookmark():
     if is_known_ip(request.remote_addr):
@@ -176,11 +164,6 @@ def get_notify():
                                                       ("Cache-Control", "public, max-age=0")]
 
 
-def is_known_ip(ip):
-    with open(resource_path('') + "user.json", 'r') as f:
-        return ip in json.loads(f.read())['ip']
-
-
 @app.route("/userLogin")
 def user_login(name=None, psw=None) -> str:
     name = name if name else request.args.get("name")
@@ -206,21 +189,14 @@ def add_remote_download():
     out = request.form['out']
     url = request.form['url']
     jsonrpc = Aria2RPC(token="0930")
+    season_name = get_season_name(out)
     options = {"out": out,
-               "dir": os.path.join(disk_manager.disk_manager_dir, disk_manager.get_max_avl_disk(), 'Download'),
+               "dir": os.path.join(disk_manager.disk_manager_dir, disk_manager.get_max_avl_disk(),
+                                   'Download' if not season_name else season_name),
                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                              "Chrome/92.0.4515.107 Safari/537.36 Edg/92.0.902.55"}
     jsonrpc.addUri([url], options=options)
     return "<script>window.close();</script>", 200, {"Content-Type": "text/html; charset=utf-8"}
-
-
-def start_services():
-    try:
-        import plugin.logger
-        import plugin.aria2
-        import plugin.fan
-    except Exception as e:
-        print(e)
 
 
 # 不管是什么路径的链接都发送模板html，读取路径然后通过api来加载文件夹与文件
