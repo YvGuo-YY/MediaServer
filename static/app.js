@@ -40,10 +40,10 @@ function getFileList() {
         for (const list of eval(data)) {
             if (list.type === "Directory")
                 //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
-                $('div#dir-panel').append(String.format(directory_html_data, list.name))
+                $('div#dir-panel').append(String.format(directory_html_data, list.name.substring(list.name.lastIndexOf('/')+1)))
             else {
                 let __1 = list.name
-                let _0 = __1.substring(__1.lastIndexOf('/'+1))
+                let _0 = __1.substring(__1.lastIndexOf('/')+1)
                 console.log(_0)
                 let _1 = list.mime_type
                 let _2 = __1.replace('+', '%2B')
