@@ -33,7 +33,7 @@ Array.prototype.toPath = function() {
 };
 
 function getFileList() {
-    $.get("/getFileList?path=" + path_list.toString(), function (data) {
+    $.get("/getFileList?path=" + path_list.toPath(), function (data) {
         $('#dir-panel').empty();
         $('#file-panel').empty();
         $('.mdc-top-app-bar__title').text(path_list.toString())
