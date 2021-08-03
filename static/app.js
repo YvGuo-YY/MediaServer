@@ -42,10 +42,10 @@ function getFileList() {
                 //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
                 $('div#dir-panel').append(String.format(directory_html_data, list.name))
             else {
-                let _0 = list.name
+                let _-1 = list.name
+                let _0 = _-1.substring(_-1.lastIndexOf('/'+1))
                 let _1 = list.mime_type
-                let _2 = _0.replace('+', '%2B')
-                _0 = _0.substring(_0.lastIndexOf('/'+1))
+                let _2 = _-1.replace('+', '%2B')
                 let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
                 let _4 = _2
                 let _5 = list.bookmark_state
