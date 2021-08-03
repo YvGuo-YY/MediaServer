@@ -44,6 +44,7 @@ function getFileList() {
             else {
                 let __1 = list.name
                 let _0 = __1.substring(__1.lastIndexOf('/'+1))
+                console.log(_0)
                 let _1 = list.mime_type
                 let _2 = __1.replace('+', '%2B')
                 let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
