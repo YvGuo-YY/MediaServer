@@ -1,13 +1,13 @@
-var root = "/";
+var path_list = [];
 
 function goNext(name) {
-    root = root + name + "/";
+    path_list.push(name);
     getFileList();
 }
 
 function goBack() {
-    if (root !== "/") {
-        root = root.substring(0, root.substring(0, root.length - 1).lastIndexOf("/") + 1);
+    if (path_list.length > 0) {
+        path_list.pop()
         getFileList();
     } else openSnackbar("不能再返回了");
 }
@@ -16,15 +16,13 @@ function onItemClick(name, type, mime_type) {
     console.log(name);
     if (type === "Directory")
         goNext(name);
-    else
-        getFileDetail(name, mime_type);
 }
 
 function getFileList() {
     $.get("/getFileList?path=" + root, function (data) {
         $('#dir-panel').empty();
         $('#file-panel').empty();
-        $('.mdc-top-app-bar__title').text(root)
+        $('.mdc-top-app-bar__title').text(path_list.join('/'))
         for (const list of eval(data)) {
             if (list.type === "Directory")
                 //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
