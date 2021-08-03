@@ -135,7 +135,7 @@ def get_file(file_name):
     if is_known_ip(request.remote_addr):
         # url中加一个文件名避免播放器不知道视频文件名
         path = request.args.get("path").replace('%2B', '+')
-        return send_file(root + path, as_attachment=True, download_name=path[path.rindex("/") + 1:],
+        return send_file(os.path.join(root, path), as_attachment=True, download_name=path[path.rindex("/") + 1:],
                          conditional=True)
     else:
         return redirect('/login', code=302)
