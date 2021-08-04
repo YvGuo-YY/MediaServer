@@ -14,10 +14,10 @@ def file_size_desc(size):
 
 def get_season_name(name: str):
     import re
-    regex = r".*\.S\d\d"
+    regex = r"(.*)\.S\d{2}"
     matches = re.finditer(regex, name, re.MULTILINE | re.IGNORECASE)
     for matchNum, match in enumerate(matches, start=1):
-        return match.group()
+        return match.group(1).replace('.', ' ').strip()
     return None
 
 
