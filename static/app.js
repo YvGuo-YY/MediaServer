@@ -36,6 +36,7 @@ function getFileList() {
     $.get("/getFileList?path=" + path_list.toPath(), function (data) {
         $('#dir-panel').empty();
         $('#file-panel').empty();
+        $('footer').empty();
         $('.mdc-top-app-bar__title').text(path_list.toString())
         for (const list of eval(data)) {
             if (list.type === "Directory")

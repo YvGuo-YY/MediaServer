@@ -35,7 +35,6 @@ def is_known_ip(ip):
         return ip in json.loads(f.read())['ip']
 
 
-# 统一右边加/
 def path_join(parent, file) -> str:
     parent = parent.replace("\\", "/")
     file = file.replace("\\", "/")
