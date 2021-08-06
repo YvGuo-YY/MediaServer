@@ -2,7 +2,7 @@ import ctypes
 import os.path
 import platform
 import shutil
-from tools import file_size_desc
+from tools import file_size_desc, path_join, name_from_path
 
 
 def get_free_space(folder):
@@ -40,16 +40,17 @@ class DiskManager:
             os.mkdir(self._preview_cache_dir)
         self.root = self._disk_manager_dir
         for path in self.disk_list:
-            self.disk_names.append(path[path[:-1].rfind("/") + 1:])
-            os.system(f'ln -s {path} {os.path.join(self._disk_manager_dir, path[path.rfind("/") + 1:])}')
+            disk_name = name_from_path(path)
+            self.disk_names.append(disk_name)
+            os.system(f'ln -s {path} {path_join(self._disk_manager_dir, disk_name)}')
 
     def listdir(self, path) -> list:
         li = []
         for disk in (self.disk_names if path == '/' else [path[1:]]):
-            a = os.listdir(os.path.join(self.root, disk))
+            a = os.listdir(path_join(self.root, disk))
             a.sort()
             for f in a:
-                li.append(f'{disk}/{f}')
+                li.append(path_join(disk, f))
         return li
 
     def get_max_avl_disk(self):
@@ -57,7 +58,7 @@ class DiskManager:
         for i, path in enumerate(self.disk_list):
             free = get_free_space(path) / self._disk_weight[i]
             if free > _max[0]:
-                _max = (free, path[path.rfind("/") + 1:])
+                _max = (free, name_from_path(path))
         return _max[1]
 
     def __print__(self):

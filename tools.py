@@ -35,5 +35,22 @@ def is_known_ip(ip):
         return ip in json.loads(f.read())['ip']
 
 
+# 统一右边加/
+def path_join(parent, file) -> str:
+    parent = parent.replace("\\", "/")
+    file = file.replace("\\", "/")
+    parent = parent[1 if parent.startswith("/") else 0:-1 if parent.endswith("/") else len(parent)]
+    file = file[1 if file.startswith("/") else 0:-1 if file.endswith("/") else len(file)]
+    return parent + '/' + file
+
+
+def triple_path_join(parent, file, child) -> str:
+    return path_join(path_join(parent, file), child)
+
+
+def name_from_path(path):
+    return path[path[:-1].rfind("/") + 1:]
+
+
 def resource_path(relative_path):
     return sys.path[0] + '/' + relative_path
