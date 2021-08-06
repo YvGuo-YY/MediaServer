@@ -83,10 +83,9 @@ def send_file_list():
     for f in a:  # assert f==sda/xxS01 or sda/xxS01/xx.mkv
         mime = mimetypes.guess_type(f)[0]
         bookmark_flag_file = path_join(disk_manager.preview_cache_dir, f.replace("/", "_") + '.bookmark')
-        if os.path.isdir(path_join(root, f)) and not os.path.exists(path_join(root, f, '.cover')):
+        if os.path.isdir(path_join(root, f)) and not os.path.exists(triple_path_join(root, f, '.cover')):
             # skip folders that might not contains media file
             continue
-        f_type = ''
         if os.path.isfile(path_join(root, f)):
             if ("application/octet-stream" if mime is None else mime).startswith('video/'):
                 f_type = "File"
