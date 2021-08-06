@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 start_thr = 50.0
 stop_thr = 43.0
 fan_gpio = 14
-led_gpio = 16
+led_gpio = 15
 # GPIO 设置
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(fan_gpio, GPIO.OUT, initial=GPIO.HIGH)
