@@ -14,7 +14,7 @@ from tools import get_season_name, start_services, is_known_ip, resource_path, p
 disk_manager = DiskManager(sys.argv[1:])
 root = disk_manager.disk_manager_dir
 PORT = 80
-get_preview_lock = threading.Semaphore(2)
+get_preview_lock = threading.Semaphore(4)
 
 app = Flask(__name__, static_url_path="", static_folder=resource_path('static'),
             template_folder=resource_path("templates"))
@@ -80,9 +80,9 @@ def send_file_list():
         }]), 403, {"Content-Type": "application/json"}
     a = disk_manager.listdir(path)
     a.sort()
-    for f in a:  # assert f==sda/xxS01 or sda/xxS01/xx.mkv
+    for f in a:
         mime = mimetypes.guess_type(f)[0]
-        bookmark_flag_file = path_join(disk_manager.preview_cache_dir, f.replace("/", "_") + '.bookmark')
+        bookmark_flag_file = path_join(disk_manager.preview_cache_dir, name_from_path(f).replace('%2B', '+') + '.b')
         if os.path.isdir(path_join(root, f)) and not os.path.exists(triple_path_join(root, f, '.cover')):
             # skip folders that might not contains media file
             continue
@@ -111,7 +111,7 @@ def send_file_list():
 def toggle_bookmark():
     if is_known_ip(request.remote_addr):
         path = request.args.get("path")
-        bookmark_flag_file = path_join(disk_manager.preview_cache_dir, path.replace("/", "_") + '.bookmark')
+        bookmark_flag_file = path_join(disk_manager.preview_cache_dir, name_from_path(path).replace('%2B', '+') + '.b')
         state = os.path.exists(bookmark_flag_file)
         if state:
             os.remove(bookmark_flag_file)
@@ -138,9 +138,8 @@ def get_file(file_name):
 def get_video_preview(_path=None):
     if get_preview_lock.acquire():
         path = _path if _path else request.args.get("path")
-        cache_file_name = path.replace("/", "_").replace(":", "_")
+        new_file = path_join(disk_manager.preview_cache_dir, name_from_path(path).replace('%2B', '+') + '.jpg')
         try:
-            new_file = path_join(disk_manager.preview_cache_dir, cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):
                 os.system(f'ffmpeg -i \"{path_join(root, path)}\" -ss 00:00:05.000 -vframes 1 \"{new_file}\"')
             get_preview_lock.release()
