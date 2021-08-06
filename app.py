@@ -79,22 +79,27 @@ def send_file_list():
         }]), 403, {"Content-Type": "application/json"}
     a = disk_manager.listdir(path)
     a.sort()
-    print(a)
     for f in a:  # assert f==sda/xxS01 or sda/xxS01/xx.mkv
         mime = mimetypes.guess_type(f)[0]
         bookmark_flag_file = os.path.join(disk_manager.preview_cache_dir, f.replace("/", "_") + '.bookmark')
         if os.path.isdir(os.path.join(root, f)) and not os.path.exists(os.path.join(root, f, '.cover')):
             # skip folders that might not contains media file
             continue
-        if os.path.isfile(os.path.join(root, f)) and not (
-                "application/octet-stream" if mime is None else mime).startswith('video/'):
-            # skip file that is not media file
-            continue
+        f_type = ''
+        if os.path.isfile(os.path.join(root, f)):
+            if ("application/octet-stream" if mime is None else mime).startswith('video/'):
+                f_type = "File"
+            elif not f[f.rindex('/')+1:].startswith('.'):
+                f_type = "Attach"
+            else:
+                continue
+        else:
+            f_type = "Directory"
         json_array.append({
             "name": f,
             "length": os.path.getsize(os.path.join(root, f)) if os.path.isfile(os.path.join(root, f)) else 0,
             "desc": time.ctime(os.path.getmtime(os.path.join(root, f))),
-            "type": "File" if os.path.isfile(os.path.join(root, f)) else "Directory",
+            "type": f_type,
             "mime_type": "application/octet-stream" if mime is None else mime,
             "watched": "watched" if os.path.exists(bookmark_flag_file) else "",
             "bookmark_state": "bookmark_add" if not os.path.exists(bookmark_flag_file) else "bookmark_added"
@@ -133,7 +138,7 @@ def get_file(file_name):
 def get_video_preview(_path=None):
     if get_preview_lock.acquire():
         path = _path if _path else request.args.get("path")
-        cache_file_name = path.replace("/", "_")
+        cache_file_name = path.replace("/", "_").replace(":", "_")
         try:
             new_file = os.path.join(disk_manager.preview_cache_dir, cache_file_name.replace('%2B', '+') + '.jpg')
             if not os.path.exists(new_file):

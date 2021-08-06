@@ -45,7 +45,6 @@ class DiskManager:
 
     def listdir(self, path) -> list:
         li = []
-        print(path == '/', path)
         for disk in (self.disk_names if path == '/' else [path[1:]]):
             a = os.listdir(os.path.join(self.root, disk))
             a.sort()

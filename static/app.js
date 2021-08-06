@@ -41,7 +41,7 @@ function getFileList() {
             if (list.type === "Directory")
                 //其实是不需要url编码的，只需要把+替换一下（+可以存在于文件名，但是在url里面不行）
                 $('div#dir-panel').append(String.format(directory_html_data, list.name, list.name.substring(list.name.lastIndexOf('/')+1)))
-            else {
+            else if (list.type === "File") {
                 let __1 = list.name
                 let _0 = __1.substring(__1.lastIndexOf('/')+1)
                 let _1 = list.mime_type
@@ -51,6 +51,18 @@ function getFileList() {
                 let _5 = list.bookmark_state
                 let _6 = list.watched
                 $('div#file-panel').append(String.format(file_html_data, _0, _1, _2, _3, _4, _5, _6));
+            } else if (list.type === "Attach") {
+                let __1 = list.name
+                let _0 = __1.substring(__1.lastIndexOf('/')+1)
+                let _1 = list.mime_type
+                let _2 = __1.replace('+', '%2B')
+                let _3 = window.location.host + "/getFile/" + _0 + "?path=" + _2
+                var p=document.createElement("li");
+                var a=document.createElement("a");
+                a.href="http://"+_3;
+                a.appendChild(document.createTextNode(_0));
+                p.appendChild(a);
+                $('footer').append(p);
             }
         }
     });
