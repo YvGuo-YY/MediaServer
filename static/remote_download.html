@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加到树莓派</title>
+  <link rel="shortcut icon" href="/getAssets?res=favicon.webp"/>
+  <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+<!--  <script type="text/javascript" src="/getAssets?res=jquery-3.5.1.min.js"></script>-->
+</head>
+<body>
+<textarea rows="3" cols="20" id="json_input" style="width: 99%;min-height: 300px;"></textarea>
+<button id="json_btn" onclick="json_post()">添加</button>
+<script>
+  function json_post(){
+    var text = $('#json_input').val();
+    var jsonObject= jQuery.parseJSON(text);
+    for(var i = 0;i<jsonObject.length;i++){
+        var a = jsonObject[i].out;
+        var b = jsonObject[i].url;
+        send_url_to_aria2(a, b);
+    }
+  };
+  function send_url_to_aria2(name, url){
+        $.post("/remote_download?type=json",{out: name, url: url},function(result){
+          console.log(result);
+        });
+    };
+</script>
+</body>
+</html>

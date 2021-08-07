@@ -187,8 +187,13 @@ def user_login(name=None, psw=None) -> str:
             return "用户不存在"
 
 
-@app.route("/remote_download", methods=['POST'])
+@app.route("/remote_download", methods=['POST', 'GET'])
 def add_remote_download():
+    if request.method == 'GET':
+        return app.send_static_file('remote_download.html'), 200, [("Cache-Control", "no-cache, no-store, "
+                                                                                     "must-revalidate"),
+                                                                   ("Pragma", "no-cache"), ("Expires", "0"),
+                                                                   ("Cache-Control", "public, max-age=0")]
     from pyaria2 import Aria2RPC
     out = request.form['out']
     url = request.form['url']
