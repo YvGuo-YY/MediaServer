@@ -1,4 +1,5 @@
 import json
+import platform
 import sys
 
 
@@ -14,7 +15,7 @@ def file_size_desc(size):
 
 def get_season_name(name: str):
     import re
-    regex = r"(.*)\.S\d{2}"
+    regex = r"(.*\.S\d+)"
     matches = re.finditer(regex, name, re.MULTILINE | re.IGNORECASE)
     for matchNum, match in enumerate(matches, start=1):
         return match.group(1).replace('.', ' ').strip()
@@ -23,9 +24,10 @@ def get_season_name(name: str):
 
 def start_services():
     try:
-        import plugin.logger
-        import plugin.aria2
-        import plugin.fan
+        if platform.system() == "Linux":
+            import plugin.logger
+            import plugin.aria2
+            import plugin.fan
     except Exception as e:
         print(e)
 

@@ -26,7 +26,7 @@ def fan_controller():
         GPIO.output(fan_gpio, GPIO.HIGH)
         GPIO.output(led_gpio, GPIO.HIGH)
         is_fan_running = True
-    elif temp < stop_thr and is_fan_running:
+    if temp < stop_thr and is_fan_running:
         GPIO.output(fan_gpio, GPIO.LOW)
         GPIO.output(led_gpio, GPIO.LOW)
         is_fan_running = False
@@ -39,4 +39,4 @@ def fan_controller():
 
 
 print("temp-controlled fan running")
-Timer(10, fan_controller).start()
+fan_controller()
