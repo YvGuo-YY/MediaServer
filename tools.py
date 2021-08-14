@@ -28,7 +28,6 @@ def start_services():
             import plugin.logger
             import plugin.aria2
             import plugin.fan
-            import plugin.http_piercer
     except Exception as e:
         print(e)
 

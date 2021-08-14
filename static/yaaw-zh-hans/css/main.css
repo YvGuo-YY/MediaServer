@@ -22,9 +22,9 @@
     position: relative;
     display: inline-block;
     box-sizing: border-box;
-    width: 150px;
+    width: fit-content;
     height: 40px;
-    padding: 5px 10px 5px 48px;
+    padding: 5px 5px 5px 48px;
     border-radius: 100px;
     transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
     border: 1px solid #ccc;
