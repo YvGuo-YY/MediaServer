@@ -27,7 +27,7 @@ def not_found(err):
 
 @app.route('/download')
 def remote_download():
-    return app.send_static_file('yaaw-zh-hans/index.html'), 200, [("Cache-Control",
+    return app.send_static_file('yaaw/index.html'), 200, [("Cache-Control",
                                                                    "no-cache, no-store, must-revalidate"),
                                                                   ("Pragma", "no-cache"), ("Expires", "0"),
                                                                   ("Cache-Control", "public, max-age=0")]
